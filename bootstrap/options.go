@@ -4,17 +4,17 @@ import "github.com/asticode/go-astilectron"
 
 // Options represents options
 type Options struct {
-	Asset              Asset
-	AstilectronOptions astilectron.Options
-	Debug              bool
-	Homepage           string
-	MenuOptions        []*astilectron.MenuItemOptions
-	MessageHandler     MessageHandler
-	OnWait             OnWait
-	RestoreAssets      RestoreAssets
-	TrayMenuOptions    []*astilectron.MenuItemOptions
-	TrayOptions        *astilectron.TrayOptions
-	WindowOptions      *astilectron.WindowOptions
+  Asset              Asset
+  AstilectronOptions astilectron.Options
+  Debug              bool
+  Homepage           string
+  MenuOptions        []*astilectron.MenuItemOptions
+  MessageHandler     MessageHandler
+  OnWait             OnWait
+  RestoreAssets      RestoreAssets
+  TrayMenuOptions    []*astilectron.MenuItemOptions
+  TrayOptions        *astilectron.TrayOptions
+  WindowOptions      *astilectron.WindowOptions
 }
 
 // MessageHandler is a functions that handles messages
