@@ -1,0 +1,37 @@
+{
+  "name": "src",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "repository": "https://github.com/ZEROKISEKI/starsManager.git",
+  "author": "ZEROKISEKI <20142100095@m.scnu.edu.cn>",
+  "scripts": {
+    "start": "parcel index.html",
+    "build": "parcel build index.html --no-minify --public-url ./"
+  },
+  "alias": {
+    "@": "client/assets"
+  },
+  "devDependencies": {
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "parcel-bundler": "^1.6.2",
+    "parcel-plugin-vue": "^1.5.0"
+  },
+  "dependencies": {
+    "autoprefixer": "^8.2.0",
+    "axios": "^0.18.0",
+    "babel-runtime": "^6.26.0",
+    "github-markdown-css": "^2.10.0",
+    "highlight.js": "^9.12.0",
+    "node-sass": "^4.8.3",
+    "postcss-modules": "^1.1.0",
+    "pouchdb": "^6.4.3",
+    "vue": "^2.5.16",
+    "vue-i18n": "^7.6.0",
+    "vue-router": "^3.0.1",
+    "vuetify": "^1.0.9",
+    "vuex": "^3.0.1"
+  }
+}
