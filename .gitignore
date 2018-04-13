@@ -1,7 +1,6 @@
 .idea
 .DS_Store
 src/.DS_Store
-src/dist/src.js
 src/dist
 !src/dist/icon.icns
 !src/dist/icon.ico
