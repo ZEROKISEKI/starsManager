@@ -2,10 +2,12 @@
 .DS_Store
 src/.DS_Store
 src/dist/src.js
-src/dist/src.css
-src/dist/index.html
+src/dist
+!src/dist/icon.icns
+!src/dist/icon.ico
+!src/dist/icon.png
 src/.cache
-srr/node_modules/
+src/node_modules
 output
 vendor_astilectron_bundler
 bind_darwin_amd64.go
