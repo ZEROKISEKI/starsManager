@@ -44,7 +44,7 @@
           </v-toolbar>
           <v-list three-line class="scroll-y" id="scrolling-techniques" style="max-height:100%; padding-top: 64px;">
             <template v-for="(repo, index) in searchStarredRepos">
-              <v-list-tile :key="repo.id" avatar @click="filePath = repo.full_name">
+              <v-list-tile :key="repo.id" avatar @click="changeFilePath(repo.full_name)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ repo.full_name }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">{{ repo.description }}</v-list-tile-sub-title>
@@ -58,19 +58,25 @@
               </v-list-tile>
               <v-divider v-if="index + 1 < starredRepos.length" :key="index"></v-divider>
             </template>
+            <template v-if="searchStarredRepos.length === 0">
+              <v-list-tile style="min-width: 320px;">
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ $t('message.starredList.noList') }}</v-list-tile-title>
+                </v-list-tile-content>
+              </v-list-tile>
+            </template>
           </v-list>
         </v-card>
       </v-flex>
       <v-flex md8 lg8 xl8 style="max-width: 100%; flex-grow: 1; -webkit-flex-grow: 1; overflow-x: auto;">
-        <file v-if="filePath !== null" :file-path="filePath" :height="cardHeight"></file>
-        <!-- TODO 增加空白页面 -->
+        <file v-if="filePath !== null" :height="cardHeight"></file>
         <empty v-else></empty>
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 <script>
-import { mapState } from 'vuex'
+import { mapState, mapActions } from 'vuex'
 import File from './File.vue'
 import Empty from './Empty.vue'
 export default {
@@ -81,7 +87,6 @@ export default {
       cardHeight: 'auto',
       searchKeyWords: '',
       sortWay: null,
-      filePath: null,
     }
   },
   components: {
@@ -98,7 +103,8 @@ export default {
         } else {
           return github.starredRepos.filter(repo => repo.language === this.language)
         }
-      }
+      },
+      filePath: ({ github }) => github.filePath,
     }),
     keywords() {
       return new RegExp(this.searchKeyWords, 'i')
@@ -123,6 +129,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['setFilePath']),
     stargazersCount(count) {
       if (count < 1000) {
         return count
@@ -133,6 +140,12 @@ export default {
     onResize() {
       this.cardHeight = `${window.innerHeight - 64}px`
     },
+    /* getStarredRepoData(fullName) {
+      this.filePath = fullName
+    }*/
+    changeFilePath(path) {
+      this.setFilePath(path)
+    }
   },
   watch: {
     '$route' (to, from) {

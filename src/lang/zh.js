@@ -12,6 +12,7 @@ export default {
       starredRepos: '你star的项目'
     },
     starredList: {
+      noList: '没有搜索结果',
       search: '仓库名|用户名',
       sortWays: {
         starredDate: '按star日期排序',

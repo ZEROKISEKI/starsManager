@@ -33,9 +33,10 @@ import hljs from 'highlight.js'
 import 'github-markdown-css'
 
 Vue.directive('highlightjs', function(el) {
-  // TODO 测试highlight是否可以只对pre元素的内容高亮
-  let blocks = el.querySelectorAll('pre')
-  Array.prototype.forEach.call(blocks, hljs.highlightBlock);
+  new Promise((resolve, reject) => {
+    hljs.highlightBlock(el)
+    resolve()
+  })
 })
 
 // 修改所有链接元素的链接(针对非完整地址, 比如#, ./, ../这些), 添加前缀
@@ -68,7 +69,7 @@ Vue.directive('openlink', function (el, binding) {
   let images = el.querySelectorAll('img')
   for (let image of images) {
     const src = image.getAttribute('src')
-    if (src.startsWith('../') || src.startsWith('./')) {
+    if (src.startsWith('../') || src.startsWith('./') || !/https?:\/\//.test(src)) {
       // 前缀为https://github.com/:owner/:repo/raw/master
       image.setAttribute('src', `https://github.com/${owner}/${repo}/raw/master/${src}`)
     }

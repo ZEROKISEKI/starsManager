@@ -9,8 +9,16 @@
           <v-icon v-if="drawer">arrow_back</v-icon>
         </v-toolbar-side-icon>
         <v-spacer></v-spacer>
+        <!-- TODO 设置页面设置config.ini -->
+        <v-btn icon @click="">
+          <v-icon>settings</v-icon>
+        </v-btn>
         <v-btn icon @click="logout">
           <v-icon>exit_to_app</v-icon>
+        </v-btn>
+        <!-- TODO 增加操作() -->
+        <v-btn icon @click="">
+          <v-icon>more_vert</v-icon>
         </v-btn>
       </v-toolbar>
       <v-content>

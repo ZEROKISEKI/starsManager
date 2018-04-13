@@ -1,6 +1,8 @@
 import request from '../utils/request'
 import * as type from './mutations'
 import { base64ToUtf8 } from '../utils/escape'
+import { imageType } from '../utils/filter'
+import formatTree from '../utils/formate'
 
 export default {
 
@@ -18,6 +20,14 @@ export default {
 
   fileLoadingComplete({ commit }) {
     commit(type.FILE_LOADING_COMPLETE)
+  },
+
+  treeLoadingStill({ commit }) {
+    commit(type.TREE_LOADING)
+  },
+
+  treeLoadingComplete({ commit }) {
+    commit(type.TREE_LOADING_COMPLETE)
   },
 
   setAccessToken({ commit }, token) {
@@ -84,23 +94,40 @@ export default {
 
   getStarredRepoFile({ commit }, { owner, repo, path }) {
 
-    // const headers = {}
-
-    /* let imageType
-
-    if (imageType = filter.imageType.test(path)) {
-      headers['Accept'] = 'application/vnd.github.VERSION.full'
-    } else {
-      headers['Accept'] = 'application/vnd.github.VERSION.raw'
-    } */
-
     return request({
       url: `/repos/${owner}/${repo}/contents/${path}`,
       headers: {
         Accept: 'application/vnd.github.VERSION.full+json'
       }
     }).then(res => {
-      commit(type.GET_STARRED_REPO_FILE, res.data)
+      if (/\.md$/i.test(res.data.name)) {
+        request({
+          method: 'post',
+          url: '/markdown/raw',
+          headers: {
+            'Content-Type': 'text/plain'
+          },
+          data: base64ToUtf8(res.data.content),
+          baseConfig: {
+            responseType: 'text'
+          }
+        }).then(resp => {
+          res.data.content = resp.data
+          commit(type.GET_STARRED_REPO_FILE, {
+            file: res.data,
+            owner,
+            repo
+          })
+        })
+      } else {
+        // 图片就不用解码了
+        res.data.content = imageType.test(res.data.name) ? res.data.content : base64ToUtf8(res.data.content)
+        commit(type.GET_STARRED_REPO_FILE, {
+          file: res.data,
+          owner,
+          repo
+        })
+      }
     }, err => err)
   },
 
@@ -124,7 +151,30 @@ export default {
         }
       }).then(resp => {
         res.data.content = resp.data
-        commit(type.GET_STARRED_REPO_README, res.data)
+        commit(type.GET_STARRED_REPO_README, {
+          readme: res.data,
+          owner,
+          repo
+        })
+      }, err => err)
+    }, err => err)
+  },
+
+  // 涉及到递归组件传递, 所以就用状态管理
+  setFilePath({ commit }, path) {
+    commit(type.SET_FILE_PATH, path)
+  },
+
+  getStarredRepoTree({ commit }, { owner, repo }) {
+    return request({
+      url: `/repos/${owner}/${repo}/git/trees/master?recursive=1`,
+    }).then(res => {
+      formatTree(res.data.tree, owner, repo).then(data => {
+        commit(type.GET_STARRED_REPO_TREE, {
+          owner,
+          repo,
+          data
+        })
       }, err => err)
     }, err => err)
   },

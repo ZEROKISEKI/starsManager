@@ -29,7 +29,6 @@ export default function({ method = 'get', url, headers = {}, params = {}, data, 
     headers['Content-Length'] = 0
   }
 
-  // TODO using async/await replace
   return new Promise((resolve, reject) => {
     instance(config).then(response => {
       resolve(response)

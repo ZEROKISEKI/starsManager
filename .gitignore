@@ -1,0 +1,11 @@
+.idea
+.DS_Store
+src/.DS_Store
+src/dist/src.js
+src/dist/src.css
+src/dist/index.html
+src/.cache
+srr/node_modules/
+output
+vendor_astilectron_bundler
+bind_darwin_amd64.go

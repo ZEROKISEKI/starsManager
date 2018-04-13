@@ -11,6 +11,7 @@ export default {
       starredRepos: 'Your Starred Repos'
     },
     starredList: {
+      noList: 'No Results',
       search: 'repo|user name',
       sortWays: {
         starredDate: 'sort by starred',
