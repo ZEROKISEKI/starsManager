@@ -39,39 +39,85 @@ Vue.directive('highlightjs', function(el) {
   })
 })
 
+import pouchDB from './utils/pouch'
+import getImageURI from './utils/image'
+
 // 修改所有链接元素的链接(针对非完整地址, 比如#, ./, ../这些), 添加前缀
 Vue.directive('openlink', function (el, binding) {
 
-  let links = el.querySelectorAll('a')
-  let filePath = binding.value
-  let ownerEnd = filePath.indexOf('/')
-  let repoEnd = filePath.indexOf('/', ownerEnd + 1)
-  let owner = filePath.slice(0, ownerEnd)
-  let repo = repoEnd === -1 ? filePath.slice(ownerEnd + 1) : filePath.slice(ownerEnd + 1, repoEnd)
+  // store.state.common
+  if (binding.value !== binding.oldValue) {
+    let links = el.querySelectorAll('a')
+    let filePath = binding.value
+    let ownerEnd = filePath.indexOf('/')
+    let repoEnd = filePath.indexOf('/', ownerEnd + 1)
+    let owner = filePath.slice(0, ownerEnd)
+    let repo = repoEnd === -1 ? filePath.slice(ownerEnd + 1) : filePath.slice(ownerEnd + 1, repoEnd)
 
-  for (let link of links) {
+    if (store.state.common.offline) {
 
-    const href = link.getAttribute('href')
-    if (href.startsWith('#')) {
-      // 前缀为https://github.com/:owner/:repo/
-      link.setAttribute('href', `https://github.com/${owner}/${repo}${href}`)
-    } else if(href.startsWith('../') || href.startsWith('./')) {
-      // 前缀为https://github.com/:owner/:repo/blob/master
-      link.setAttribute('href', `https://github.com/${owner}/${repo}/blob/master/${href}`)
-    }
+      let images = el.querySelectorAll('img')
+      for(let image of images) {
+        let src = image.getAttribute('src')
+        if (src.startsWith('../') || src.startsWith('./') || !/https?:\/\//.test(src)) {
+          // 前缀为https://github.com/:owner/:repo/raw/master
+          src = `https://github.com/${owner}/${repo}/raw/master/${src}`
+        }
+        pouchDB.db.getAttachment(src, src).then(blob => {
+          const dataURI = URL.createObjectURL(blob)
+          image.setAttribute('src', dataURI)
+        }).catch(err => {
+          if (err.name === 'not_found') {
+            image.setAttribute('alt', i18n.locale === 'zh' ? i18n.message.zh.noImage : i18n.message.en.noImage)
+          }
+        })
+      }
 
-    if (link.getAttribute('target') !== '_blank') {
-      link.setAttribute('target', '_blank')
-    }
+    } else {
+      for (let link of links) {
 
-  }
+        const href = link.getAttribute('href')
+        if (href.startsWith('#')) {
+          // 前缀为https://github.com/:owner/:repo/
+          link.setAttribute('href', `https://github.com/${owner}/${repo}${href}`)
+        } else if(href.startsWith('../') || href.startsWith('./')) {
+          // 前缀为https://github.com/:owner/:repo/blob/master
+          link.setAttribute('href', `https://github.com/${owner}/${repo}/blob/master/${href}`)
+        }
 
-  let images = el.querySelectorAll('img')
-  for (let image of images) {
-    const src = image.getAttribute('src')
-    if (src.startsWith('../') || src.startsWith('./') || !/https?:\/\//.test(src)) {
-      // 前缀为https://github.com/:owner/:repo/raw/master
-      image.setAttribute('src', `https://github.com/${owner}/${repo}/raw/master/${src}`)
+        if (link.getAttribute('target') !== '_blank') {
+          link.setAttribute('target', '_blank')
+        }
+
+      }
+
+      let images = el.querySelectorAll('img')
+      for (let image of images) {
+        let src = image.getAttribute('src')
+        if (src.startsWith('../') || src.startsWith('./') || !/https?:\/\//.test(src)) {
+          // 前缀为https://github.com/:owner/:repo/raw/master
+          src = `https://github.com/${owner}/${repo}/raw/master/${src}`
+          image.setAttribute('src', src)
+        }
+        getImageURI(src).then(dataURI => {
+          pouchDB.db.get(src).then(doc => {
+            return pouchDB.db.put(doc)
+          }).catch(err => {
+            if (err.name === 'not_found') {
+              const doc = {
+                _id: src,
+                _attachments: {
+                  [src]: {
+                    content_type: 'image/*',
+                    data: dataURI.replace('data:image/png;base64,', '')
+                  }
+                }
+              }
+              return pouchDB.db.put(doc)
+            }
+          })
+        })
+      }
     }
   }
 
@@ -85,4 +131,12 @@ new Vue({
   i18n,
 })
 
-// TODO localStorage切换成PouchDB
+document.addEventListener('astilectron-ready', function() {
+  astilectron.onMessage(message => {
+    if (message.name === 'NoNetwork') {
+      store.dispatch('setOffline')
+    } else if (message.name === 'HasNetwork') {
+      store.dispatch('setOnline')
+    }
+  })
+})

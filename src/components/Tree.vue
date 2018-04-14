@@ -18,6 +18,7 @@
           </template>
         </li>
       </ul>
+      <h3 v-if="treeFailed">{{ $t('message.noTree') }}</h3>
     </v-card-text>
   </v-card>
 </template>
@@ -41,6 +42,7 @@ export default {
   computed: {
     ...mapState({
       filePath: ({ github }) => github.filePath,
+      treeFailed: ({ common }) => common.treeFailed,
     }),
     owner() {
       return this.repoTree.owner

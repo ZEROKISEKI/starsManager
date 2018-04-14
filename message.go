@@ -23,132 +23,146 @@ const (
 // handleMessages handles messages
 func handleMessages(a *astilectron.Astilectron, _ *astilectron.Window, m bootstrap.MessageIn) (payload interface{}, err error) {
   switch m.Name {
-  case "login":
+    case "login": {
+      requestCodeUrl := url.Values{}
+      requestCodeUrl.Set("response_type", "code")
+      requestCodeUrl.Add("client_id", ClientId)
+      requestCodeUrl.Add("client_secret", ClientSecret)
+      requestCodeUrl.Add("redirect_uri", RedirectUri)
+      requestCodeUrl.Add("scope", "user public_repo")
 
-    requestCodeUrl := url.Values{}
-    requestCodeUrl.Set("response_type", "code")
-    requestCodeUrl.Add("client_id", ClientId)
-    requestCodeUrl.Add("client_secret", ClientSecret)
-    requestCodeUrl.Add("redirect_uri", RedirectUri)
-    requestCodeUrl.Add("scope", "user public_repo")
+      var ow, _ = a.NewWindow(AuthorizedCodeURL + "?" + requestCodeUrl.Encode(), &astilectron.WindowOptions{
+        Center: astilectron.PtrBool(true),
+        Height: astilectron.PtrInt(600),
+        Width:  astilectron.PtrInt(600),
+      })
 
-    var ow, _ = a.NewWindow(AuthorizedCodeURL + "?" + requestCodeUrl.Encode(), &astilectron.WindowOptions{
-      Center: astilectron.PtrBool(true),
-      Height: astilectron.PtrInt(600),
-      Width:  astilectron.PtrInt(600),
-    })
+      ow.On(astilectron.EventNameWindowEventDidGetRedirectRequest, func(e astilectron.Event) (deleteListener bool) {
 
-    ow.On(astilectron.EventNameWindowEventDidGetRedirectRequest, func(e astilectron.Event) (deleteListener bool) {
-
-      result := &struct {
-        AccessToken   string  `json:"access_token"`
-        TokenType     string  `json:"token_type,omitempty"`
-        Scope         string  `json:"scope,omitempty"`
-      }{}
-
-      client := &http.Client{}
-
-      requestTokenUrl := url.Values{}
-      requestTokenUrl.Set("client_id", ClientId)
-      requestTokenUrl.Add("client_secret", ClientSecret)
-      requestTokenUrl.Add("code", getURLParam(e.URLNew, "code"))
-      requestTokenUrl.Add("redirect_uri", RedirectUri)
-
-      req, _ := http.NewRequest("POST", AuthorizedTokenURL,
-        strings.NewReader(requestTokenUrl.Encode()))
-
-      req.Header.Add("Accept", "application/json")
-      req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-      resp, _ := client.Do(req)
-
-      json.NewDecoder(resp.Body).Decode(result)
-
-      resp.Body.Close()
-
-      message :=  &bootstrap.MessageOut{
-        Name: e.Name,
-        Payload: struct {
+        result := &struct {
           AccessToken   string  `json:"access_token"`
           TokenType     string  `json:"token_type,omitempty"`
           Scope         string  `json:"scope,omitempty"`
-        }{
-          AccessToken: result.AccessToken,
-          TokenType: result.TokenType,
-          Scope: result.Scope,
-        },
-      }
+        }{}
 
-      w.SendMessage(message, func(m *astilectron.EventMessage) {
-        // Unmarshal
-        // var s string
-        // m.Unmarshal(&s)
+        client := &http.Client{}
 
-        // Process message
-        // astilog.Debugf("received %s", s)
-        ow.Close()
+        requestTokenUrl := url.Values{}
+        requestTokenUrl.Set("client_id", ClientId)
+        requestTokenUrl.Add("client_secret", ClientSecret)
+        requestTokenUrl.Add("code", getURLParam(e.URLNew, "code"))
+        requestTokenUrl.Add("redirect_uri", RedirectUri)
+
+        req, _ := http.NewRequest("POST", AuthorizedTokenURL,
+          strings.NewReader(requestTokenUrl.Encode()))
+
+        req.Header.Add("Accept", "application/json")
+        req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+        resp, _ := client.Do(req)
+
+        json.NewDecoder(resp.Body).Decode(result)
+
+        resp.Body.Close()
+
+        message :=  &bootstrap.MessageOut{
+          Name: e.Name,
+          Payload: struct {
+            AccessToken   string  `json:"access_token"`
+            TokenType     string  `json:"token_type,omitempty"`
+            Scope         string  `json:"scope,omitempty"`
+          }{
+            AccessToken: result.AccessToken,
+            TokenType: result.TokenType,
+            Scope: result.Scope,
+          },
+        }
+
+        w.SendMessage(message, func(m *astilectron.EventMessage) {
+          // Unmarshal
+          // var s string
+          // m.Unmarshal(&s)
+
+          // Process message
+          // astilog.Debugf("received %s", s)
+          ow.Close()
+        })
+
+        return
       })
 
-      return
-    })
+      ow.On(astilectron.EventNameWindowEventWillNavigate, func(e astilectron.Event) (deleteListener bool) {
 
-    ow.On(astilectron.EventNameWindowEventWillNavigate, func(e astilectron.Event) (deleteListener bool) {
+        // as what the above code do
 
-      // as what the above code do
-
-      result := &struct {
-        AccessToken   string  `json:"access_token"`
-        TokenType     string  `json:"token_type,omitempty"`
-        Scope         string  `json:"scope,omitempty"`
-      }{}
-
-      client := &http.Client{}
-
-      requestTokenUrl := url.Values{}
-      requestTokenUrl.Set("client_id", ClientId)
-      requestTokenUrl.Add("client_secret", ClientSecret)
-      requestTokenUrl.Add("code", getURLParam(e.URL, "code"))
-      requestTokenUrl.Add("redirect_uri", RedirectUri)
-
-      req, _ := http.NewRequest("POST", AuthorizedTokenURL,
-        strings.NewReader(requestTokenUrl.Encode()))
-
-      req.Header.Add("Accept", "application/json")
-      req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-
-      resp, _ := client.Do(req)
-
-      json.NewDecoder(resp.Body).Decode(result)
-
-      resp.Body.Close()
-
-      message :=  &bootstrap.MessageOut{
-        Name: e.Name,
-        Payload: struct {
+        result := &struct {
           AccessToken   string  `json:"access_token"`
           TokenType     string  `json:"token_type,omitempty"`
           Scope         string  `json:"scope,omitempty"`
-        }{
-          AccessToken: result.AccessToken,
-          TokenType: result.TokenType,
-          Scope: result.Scope,
-        },
-      }
+        }{}
 
-      w.SendMessage(message, func(m *astilectron.EventMessage) {
-        // Unmarshal
-        // var s string
-        // m.Unmarshal(&s)
+        client := &http.Client{}
 
-        // Process message
-        // astilog.Debugf("received %s", s)
-        ow.Close()
+        requestTokenUrl := url.Values{}
+        requestTokenUrl.Set("client_id", ClientId)
+        requestTokenUrl.Add("client_secret", ClientSecret)
+        requestTokenUrl.Add("code", getURLParam(e.URL, "code"))
+        requestTokenUrl.Add("redirect_uri", RedirectUri)
+
+        req, _ := http.NewRequest("POST", AuthorizedTokenURL,
+          strings.NewReader(requestTokenUrl.Encode()))
+
+        req.Header.Add("Accept", "application/json")
+        req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+
+        resp, _ := client.Do(req)
+
+        json.NewDecoder(resp.Body).Decode(result)
+
+        resp.Body.Close()
+
+        message :=  &bootstrap.MessageOut{
+          Name: e.Name,
+          Payload: struct {
+            AccessToken   string  `json:"access_token"`
+            TokenType     string  `json:"token_type,omitempty"`
+            Scope         string  `json:"scope,omitempty"`
+          }{
+            AccessToken: result.AccessToken,
+            TokenType: result.TokenType,
+            Scope: result.Scope,
+          },
+        }
+
+        w.SendMessage(message, func(m *astilectron.EventMessage) {
+          // Unmarshal
+          // var s string
+          // m.Unmarshal(&s)
+
+          // Process message
+          // astilog.Debugf("received %s", s)
+          ow.Close()
+        })
+
+        return
       })
 
-      return
-    })
+      ow.Create()
+      break
+    }
+    case "saveSettings": {
+      // TODO 完成保存本地配置文件
+      break
+    }
+    case "getSettings" : {
+      // TODO 完成获取本地配置文件
 
-    ow.Create()
+      return "fuck", nil
+    }
+    case "download" : {
+      // TODO 完成git clone功能
+      break
+    }
   }
   return
 }

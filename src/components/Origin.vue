@@ -70,6 +70,7 @@
       </v-flex>
       <v-flex md8 lg8 xl8 style="max-width: 100%; flex-grow: 1; -webkit-flex-grow: 1; overflow-x: auto;">
         <file v-if="filePath !== null" :height="cardHeight"></file>
+        <!-- TODO 添加空白页面 -->
         <empty v-else></empty>
       </v-flex>
     </v-layout>

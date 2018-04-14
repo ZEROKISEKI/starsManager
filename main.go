@@ -2,7 +2,6 @@ package main
 
 import (
   "flag"
-  "time"
   "github.com/asticode/go-astilectron"
   "github.com/ZEROKISEKI/go-astilectron-bootstrap"
   "github.com/asticode/go-astilog"
@@ -44,26 +43,9 @@ func main() {
     Debug:    *debug,
     ResourcesPath: "src/dist",
     Homepage: "index.html",
-    MenuOptions: []*astilectron.MenuItemOptions{{
-      Label: astilectron.PtrStr("File"),
-      SubMenu: []*astilectron.MenuItemOptions{
-        {
-          Label: astilectron.PtrStr("About"),
-          OnClick: func(e astilectron.Event) (deleteListener bool) {
-            return
-          },
-        },
-        {Role: astilectron.MenuItemRoleClose},
-      },
-    }},
     OnWait: func(_ *astilectron.Astilectron, iw *astilectron.Window, _ *astilectron.Menu, _ *astilectron.Tray, _ *astilectron.Menu) error {
       w = iw
-      go func() {
-        time.Sleep(5 * time.Second)
-        if err := bootstrap.SendMessage(w, "check.out.menu", "Don't forget to check out the menu!"); err != nil {
-          astilog.Error(errors.Wrap(err, "sending check.out.menu event failed"))
-        }
-      }()
+      go checkAPI(iw)
       return nil
     },
     MessageHandler: handleMessages,

@@ -1,6 +1,13 @@
 export default {
   message: {
     lang: 'English',
+    offline: 'detect you are offline, check out offline mode automatically',
+    noFile: 'file loading error:(',
+    noTree: 'tree loading error:(',
+    noImage: 'this image do not cached offline',
+    clearCache: 'clear cache',
+    clearCacheSuccess: 'clear cache success',
+    clearCacheFailed: 'clear cache failed',
     login: {
       welcome: 'Welcome to use StarsManager!',
       submit: 'login',
@@ -21,6 +28,10 @@ export default {
       itemOperation: {
 
       }
+    },
+    settings: {
+      title: 'Settings',
+      save: 'save'
     }
   }
 }

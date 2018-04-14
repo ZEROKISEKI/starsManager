@@ -1,6 +1,13 @@
 export default {
   message: {
     lang: '中文',
+    offline: '检测到您为没有网络的环境, 自动为切换离线版本~',
+    noFile: '文件加载失败:(',
+    noTree: '项目树结构加载失败:(',
+    noImage: '该图片未离线缓存过',
+    clearCache: '清除缓存',
+    clearCacheSuccess: '清除缓存成功',
+    clearCacheFailed: '清除缓存失败:(',
     login: {
       welcome: '欢迎使用StarsManager!',
       submit: '登录',
@@ -22,6 +29,10 @@ export default {
       itemOperation: {
 
       }
+    },
+    settings: {
+      title: '设置',
+      save: '保存'
     }
   }
 }
