@@ -45,7 +45,7 @@ UI框架: vuetify.js(一款渐进式Material Design框架)
 
 ### 自定义分类:
 
-![custom_classification.png](./pics/offline.gif)
+![custom_classification.png](./pics/custom_classification.png)
 
 ### 利用pouchDB, 离线状态下也可查看:
 
