@@ -392,7 +392,8 @@ export default {
     return new Promise((resolve, reject) => {
       astilectron.sendMessage({ 'name': 'AddClassification', 'payload': {
           classificationName,
-          storageRepoName: github.storageRepoName
+          // fixed windows github.storageRepoName null problem
+          storageRepoName: github.storageRepoName || localStorage.getItem('starsManager-storage-repo-name')
         }
       }, message => {
         if (message.payload && message.payload.name) {
@@ -413,7 +414,7 @@ export default {
     return new Promise((resolve, reject) => {
       if (github.storageRepoName) {
         astilectron.sendMessage({ 'name': 'GetClassification', 'payload': {
-            storageRepoName: github.storageRepoName
+            storageRepoName: github.storageRepoName || localStorage.getItem('starsManager-storage-repo-name')
           }
         }, message => {
           if (typeof message.payload !== 'string') {
@@ -435,7 +436,7 @@ export default {
   setClassification({ commit, state: { github } }, classification) {
     return new Promise((resolve, reject) => {
       astilectron.sendMessage({ 'name': 'SetClassification', 'payload': {
-          storageRepoName: github.storageRepoName,
+          storageRepoName: github.storageRepoName || localStorage.getItem('starsManager-storage-repo-name'),
           classification
         }
       }, message => {
