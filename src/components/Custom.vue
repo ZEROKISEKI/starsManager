@@ -3,7 +3,7 @@
     <v-layout row>
       <v-flex md4 lg4 xl4 style="flex-basis: auto; -webkit-flex-basis: auto; min-width: 300px;">
         <v-card id="starred-list-card" style="position: relative; overflow: auto; max-width: 400px;"
-                v-resize="onResize" :height="cardHeight">
+                v-resize="onResize" :height="cardHeight" :key="name">
           <v-toolbar color="indigo" id="starred-list-card-toolbar"
                       dark absolute scroll-off-screen scroll-target="#scrolling-techniques">
             <v-spacer></v-spacer>
@@ -201,6 +201,7 @@ export default {
   watch: {
     '$route' (to, from) {
       this.name = to.params.name
+      this.searchKeyWords = ''
     }
   },
   mounted() {
