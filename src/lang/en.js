@@ -38,6 +38,7 @@ export default {
       },
       itemOperation: {
         move: 'move to...',
+        remove: 'delete',
         moveToClassification: 'moveToClassification',
       }
     },

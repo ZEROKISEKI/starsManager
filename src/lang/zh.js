@@ -39,6 +39,7 @@ export default {
       },
       itemOperation: {
         move: '移动到...',
+        remove: '删除',
         moveToClassification: '移动到分类',
       }
     },
