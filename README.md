@@ -11,7 +11,7 @@
 
 仍在开发中..., 目前的release只提供mac版本, windows版本, 貌似有坑, 我先填一段时间再说
 
-![windows版本](http://p0w4szagp.bkt.clouddn.com/starsManager/yaoming.jpeg)
+![windows版本](http://p0w4szagp.bkt.clouddn.com/starsManager/yaoming.jpeg?imageView2/1/w/200/h/200/format/jpg/q/75|imageslim)
 
 [ ] 检测离线状态
 [ ] 样式优化
@@ -29,7 +29,6 @@ UI框架: vuetify.js(一款渐进式Material Design框架)
 
 ## 演示效果(未完):
 
-![starred repo]()
 
 ## 开发过程:
 
