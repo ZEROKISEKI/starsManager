@@ -35,10 +35,21 @@ UI框架: vuetify.js(一款渐进式Material Design框架)
 
 ## 演示效果(未完):
 
----
+### 查看star的项目:
 
-## 开发过程(未完):
+![see_starred_repo.png](./pics/see_starred_repo.png)
 
+### 项目结构树查看:
+
+![see_tree.png](./pics/see_tree.png)
+
+### 自定义分类:
+
+![custom_classification.png](./pics/offline.gif)
+
+### 利用pouchDB, 离线状态下也可查看:
+
+![offline.gif](./pics/offline.gif)
 
 ---
 
@@ -128,6 +139,7 @@ astilectron-0.20.0.zip
 
 ---
 
+## 开发过程(未完):
 
 
 
