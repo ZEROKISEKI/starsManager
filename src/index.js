@@ -41,6 +41,7 @@ Vue.directive('highlightjs', function(el) {
 
 import pouchDB from './utils/pouch'
 import getImageURI from './utils/image'
+import * as type from "./store/mutations";
 
 // 修改所有链接元素的链接(针对非完整地址, 比如#, ./, ../这些), 添加前缀
 Vue.directive('openlink', function (el, binding) {
@@ -132,11 +133,33 @@ new Vue({
 })
 
 document.addEventListener('astilectron-ready', function() {
+
   astilectron.onMessage(message => {
-    if (message.name === 'NoNetwork') {
-      store.dispatch('setOffline')
-    } else if (message.name === 'HasNetwork') {
-      store.dispatch('setOnline')
+
+    switch(message.name) {
+      case "NoNetwork" : {
+        store.dispatch('setOffline')
+        break
+      }
+      case "HasNetwork": {
+        store.dispatch('setOnline')
+        break
+      }
+      case "window.event.will.navigate":
+      case "window.event.did.get.redirect.request": {
+        store.dispatch('setAccessToken', message.payload.access_token)
+        router.push({
+          path: '/main',
+          name: 'Main'
+        })
+      }
     }
   })
+
+  store.dispatch('getClassification').catch(err => {
+    if (err) {
+      console.log(err)
+    }
+  })
+
 })

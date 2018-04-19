@@ -24,7 +24,12 @@ export default {
     treeLoading: true,
     treeFailed: false,
     settingsLoading: true,
-    settings: {}
+    settings: {
+      storageRepo: {
+        path: {}
+      },
+      cloneRepoPath: {}
+    }
   },
   mutations: {
     [LOADING](state) {

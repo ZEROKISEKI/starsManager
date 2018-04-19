@@ -4,6 +4,10 @@ import {
   GET_STARRED_REPO_README,
   SET_FILE_PATH,
   GET_STARRED_REPO_TREE,
+  SET_STORAGE_REPO_NAME,
+  ADD_CLASSIFICATION,
+  GET_CLASSIFICATION,
+  SET_CLASSIFICATION,
 } from '../mutations'
 import pouchDB from '../../utils/pouch'
 
@@ -16,6 +20,8 @@ export default {
     repo: null,
     starredReposTree: [],
     filePath: null,
+    storageRepoName: localStorage.getItem('starsManager-storage-repo-name') || null,
+    classification: []
   },
   mutations: {
     [GET_USER_STARRED](state, data) {
@@ -112,6 +118,19 @@ export default {
           }
         })
       }
+    },
+    [SET_STORAGE_REPO_NAME](state, repoName) {
+      state.stroageRepoName = repoName
+      localStorage.setItem('starsManager-storage-repo-name', repoName)
+    },
+    [ADD_CLASSIFICATION](state, newClassification) {
+      state.classification.push(newClassification)
+    },
+    [GET_CLASSIFICATION](state, classification) {
+      state.classification = classification
+    },
+    [SET_CLASSIFICATION](state, classification) {
+      state.classification = classification
     }
   }
 }

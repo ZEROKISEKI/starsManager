@@ -45,7 +45,7 @@ func main() {
     Homepage: "index.html",
     OnWait: func(_ *astilectron.Astilectron, iw *astilectron.Window, _ *astilectron.Menu, _ *astilectron.Tray, _ *astilectron.Menu) error {
       w = iw
-      go checkAPI(iw)
+      go checkAPI()
       return nil
     },
     MessageHandler: handleMessages,

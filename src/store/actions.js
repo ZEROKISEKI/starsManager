@@ -355,8 +355,13 @@ export default {
   },
 
   // 获取本地配置
-  getSettings({ commit }, settings = {}) {
-    commit(type.GET_SETTINGS, settings)
+  getSettings({ commit }, settings) {
+    commit(type.GET_SETTINGS, settings || {
+      storageRepo: {
+        path: {}
+      },
+      cloneRepoPath: {}
+    })
   },
 
   // 清除缓存
@@ -365,6 +370,82 @@ export default {
       return res
     }).catch(err => {
       throw(err)
+    })
+  },
+
+  setStorageRepoName({ commit }, repoName) {
+    return new Promise((resolve, reject) => {
+      astilectron.sendMessage({ 'name': 'CreateStorageRepo', 'payload': repoName }, message => {
+        if (message.name === 'CreateStorageRepo.callback') {
+          if (message.payload === 'success') {
+            commit(type.SET_STORAGE_REPO_NAME, repoName)
+            resolve()
+          } else {
+            reject(message.payload)
+          }
+        }
+      })
+    })
+  },
+
+  addClassification({ commit, state: { github } }, classificationName) {
+    return new Promise((resolve, reject) => {
+      astilectron.sendMessage({ 'name': 'AddClassification', 'payload': {
+          classificationName,
+          storageRepoName: github.storageRepoName
+        }
+      }, message => {
+        if (message.payload && message.payload.name) {
+          commit(type.ADD_CLASSIFICATION, {
+            name: message.payload.name,
+            createdDate: message.payload.createdDate,
+            repos: message.payload.repos || []
+          })
+          resolve()
+        } else {
+          reject(message.payload)
+        }
+      })
+    })
+  },
+
+  getClassification({ commit, state: { github } }) {
+    return new Promise((resolve, reject) => {
+      if (github.storageRepoName) {
+        astilectron.sendMessage({ 'name': 'GetClassification', 'payload': {
+            storageRepoName: github.storageRepoName
+          }
+        }, message => {
+          if (typeof message.payload !== 'string') {
+            commit(type.GET_CLASSIFICATION, message.payload.map(e => {
+              if(!e.repos) e.repos = []
+              return e
+            }))
+            resolve()
+          } else {
+            reject(message.payload)
+          }
+        })
+      } else {
+        reject()
+      }
+    })
+  },
+
+  setClassification({ commit, state: { github } }, classification) {
+    return new Promise((resolve, reject) => {
+      astilectron.sendMessage({ 'name': 'SetClassification', 'payload': {
+          storageRepoName: github.storageRepoName,
+          classification
+        }
+      }, message => {
+        if (message.payload === 'success') {
+          commit(type.SET_CLASSIFICATION, classification)
+          resolve()
+        } else {
+          reject(message.payload)
+        }
+      })
     })
   },
 

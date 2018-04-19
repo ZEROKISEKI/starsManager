@@ -9,4 +9,8 @@ src/.cache
 src/node_modules
 output
 vendor_astilectron_bundler
+cache_astilectron_bundler
 bind_darwin_amd64.go
+bind_windows_amd64.go
+bind_linux_amd64.go
+starsManagerRepo

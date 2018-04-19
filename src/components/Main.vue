@@ -10,9 +10,15 @@
         </v-toolbar-side-icon>
         <v-toolbar-title v-show="owner && repo">{{ owner }}/{{ repo }}</v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn icon @click="openSettings = true">
+        <v-tooltip left>
+          <v-btn icon @click="clearCache()" slot="activator">
+            <v-icon>delete</v-icon>
+          </v-btn>
+          <span>{{ $t('message.clearCache') }}</span>
+        </v-tooltip>
+        <!--<v-btn icon @click="openSettingsWindow()">
           <v-icon>settings</v-icon>
-        </v-btn>
+        </v-btn>-->
         <v-btn icon @click="logout">
           <v-icon>exit_to_app</v-icon>
         </v-btn>
@@ -20,7 +26,7 @@
           <v-btn icon slot="activator" dark>
             <v-icon>more_vert</v-icon>
           </v-btn>
-          <!-- 增加v-list操作 -->
+          <!-- TODO add other operation, like music 163 -->
         </v-menu>
       </v-toolbar>
       <v-content>
@@ -32,7 +38,7 @@
           </v-layout>
         </v-container>
       </v-content>
-      <v-dialog fullscreen :overlay="false" v-model="openSettings"
+      <!--<v-dialog fullscreen :overlay="false" v-model="openSettings"
                 scrollable
                 transition="dialog-bottom-transition">
         <v-card>
@@ -48,6 +54,41 @@
           </v-toolbar>
           <v-card-text>
             <v-btn color="primary" dark @click.stop="clearCache()">{{ $t('message.clearCache') }}</v-btn>
+            <v-list three-line v-if="settings.storageRepo">
+              <v-list-tile avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ $t('message.settings.storageRepo.name') }}</v-list-tile-title>
+                  <v-text-field v-model="settings.storageRepo.name"></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ $t('message.settings.storageRepo.default') }}</v-list-tile-title>
+                  <v-text-field disabled v-model="settings.storageRepo.path.default"></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ $t('message.settings.storageRepo.custom') }}</v-list-tile-title>
+                  <v-text-field v-model="settings.storageRepo.path.custom"></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list>
+            <v-divider></v-divider>
+            <v-list three-line v-if="settings.cloneRepoPath">
+              <v-list-tile avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ $t('message.settings.cloneRepoPath.default') }}</v-list-tile-title>
+                  <v-text-field disabled v-model="settings.cloneRepoPath.default"></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ $t('message.settings.cloneRepoPath.custom') }}</v-list-tile-title>
+                  <v-text-field v-model="settings.cloneRepoPath.custom"></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
+            </v-list>
           </v-card-text>
           <div style="flex: 1 1 auto;"></div>
         </v-card>
@@ -61,17 +102,24 @@
                  transition="scale-transition" dismissible>
           {{ $t('message.clearCacheFailed') }}
         </v-alert>
-      </v-dialog>
+      </v-dialog>-->
     </template>
-    <v-alert type="error" :value="offline" transition="scale-transition" :style="offlineStyle">
+    <v-alert type="error" :value="offline" transition="scale-transition" :style="alertStyle">
       {{ $t('message.offline') }}
+    </v-alert>
+    <v-alert type="success" :value="cacheCleared"  :style="alertStyle"
+             transition="scale-transition" dismissible>
+      {{ $t('message.clearCacheSuccess') }}
+    </v-alert>
+    <v-alert type="error" :value="cacheClearedFailed" :style="alertStyle"
+             transition="scale-transition" dismissible>
+      {{ $t('message.clearCacheFailed') }}
     </v-alert>
   </v-app>
 </template>
 <script>
 import { mapState, mapActions } from 'vuex'
 import SideBar from './Sidebar.vue'
-// import defaultSettings from '../utils/defaultSettings'
 export default {
   name: "Main",
   components: {
@@ -81,16 +129,9 @@ export default {
     return {
       drawer: true,
       openSettings: false,
-      offlineStyle: {
+      alertStyle: {
         position: 'fixed',
         'z-index': 100,
-        top: '20px',
-        left: '50%',
-        width: '400px',
-        marginLeft: '-200px'
-      },
-      cacheClearStatusStyle: {
-        position: 'fixed',
         top: '20px',
         left: '50%',
         width: '400px',
@@ -107,14 +148,21 @@ export default {
       owner: ({ github }) => github.owner,
       repo: ({ github }) => github.repo,
       settingsLoading: ({ common }) => common.settingsLoading,
-      settings: ({ common }) => common.settings,
+      settings({ common }) {
+        return JSON.parse(JSON.stringify(common.settings)) || {
+          storageRepo: {
+            path: {}
+          },
+          cloneRepoPath: {}
+        }
+      },
     }),
 
   },
   methods: {
     ...mapActions(['getUser', 'getUserStarredRepos', 'removeAccessToken', 'loadingStill',
       'loadingComplete', 'settingsLoadingStill', 'settingsLoadingComplete',
-      'setOnline', 'setOffline', 'clearDBCache']),
+      'setOnline', 'setOffline', 'clearDBCache', 'getSettings']),
     logout() {
       this.removeAccessToken()
       this.$router.push({
@@ -135,20 +183,23 @@ export default {
           this.cacheCleared = false
         }, 4000)
       })
-    }
-  },
-  watch: {
-    openSettings(newValue) {
-      if(newValue) {
-        /*this.settingsLoadingStill()
-        astilectron.sendMessage({ "name": "getSettings" }, function (message) {
-          if (message.name === 'getSettings.callback') {
-            const settings = message.payload
-            this.getSettings(settings)
-            this.settingsLoadingComplete()
-          }
-        })*/
-      }
+    },
+    openSettingsWindow() {
+      astilectron.sendMessage({ "name": "GetSettingsFile" }, message => {
+        if (message.name === 'GetSettingsFile.callback') {
+          // const payload = JSON.stringify(message.payload)
+          this.getSettings(message.payload)
+          this.openSettings = true
+        }
+      })
+    },
+    saveSettingsFile() {
+      astilectron.sendMessage({ "name": "SaveSettingsFile", "payload": this.settings }, message => {
+        if (message.name === 'SaveSettingsFile.callback') {
+          this.getSettings(this.settings)
+          this.openSettings = false
+        }
+      })
     }
   },
   created() {

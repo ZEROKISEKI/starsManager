@@ -25,7 +25,6 @@
         <h3 style="text-align: center;">{{ $t('message.noFile') }}</h3>
       </div>
     </v-card-text>
-    <!-- TODO 修改判断: offline但已经git clone的可以加载 -->
     <v-speed-dial v-model="fab" bottom right style="position: fixed;" v-if="filePath !== null"
                   :open-on-hover="false" :transition="transition" :direction="direction">
       <v-btn slot="activator" color="blue darken-2" dark fab v-model="fab">

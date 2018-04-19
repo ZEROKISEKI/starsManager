@@ -37,18 +37,8 @@ export default {
     ...mapActions(['setAccessToken']),
     login() {
       // const that = this
-      astilectron.onMessage(message => {
-        if (message.name === "window.event.will.navigate" ||
-          message.name === "window.event.did.get.redirect.request") {
-          this.setAccessToken(message.payload.access_token)
-          this.$router.push({
-            path: '/main',
-            name: 'Main'
-          })
-        }
-      })
 
-      astilectron.sendMessage({ "name": "login" }, function (message) {})
+      astilectron.sendMessage({ "name": "Login" }, function (message) {})
     },
     changeLocale(language = 'en') {
       this.$i18n.locale = language
