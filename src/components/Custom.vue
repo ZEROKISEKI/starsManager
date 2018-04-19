@@ -12,7 +12,7 @@
           </v-toolbar>
           <v-list three-line class="scroll-y" id="scrolling-techniques" style="max-height:100%; padding-top: 64px;">
             <template v-for="(repo, index) in searchStarredRepos">
-              <v-list-tile :key="repo.id" avatar @click="changeFilePath(repo.full_name)">
+              <v-list-tile :key="repo.id" avatar @click="changeFilePath(repo.full_name, $event)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ repo.full_name }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">{{ repo.description }}</v-list-tile-sub-title>
@@ -27,6 +27,11 @@
                       <v-list-tile @click="moveToClassification(repo.id)">
                         <v-list-tile-content>
                           <v-list-tile-title>{{ $t('message.starredList.itemOperation.move') }}</v-list-tile-title>
+                        </v-list-tile-content>
+                      </v-list-tile>
+                      <v-list-tile @click="removeFromClassification(repo.id)">
+                        <v-list-tile-content>
+                          <v-list-tile-title>{{ $t('message.starredList.itemOperation.remove') }}</v-list-tile-title>
                         </v-list-tile-content>
                       </v-list-tile>
                     </v-list>
@@ -52,7 +57,7 @@
             </v-toolbar>
             <v-list two-line>
               <v-list-tile avatar v-for="(item, index) in classification" :key="index">
-                <v-list-tile-action>
+                <v-list-tile-action style="width: 100%;">
                   <v-radio-group v-model="classificationName">
                     <v-radio :value="item.name" :label="item.name" :key="item.name"></v-radio>
                   </v-radio-group>
@@ -147,8 +152,10 @@ export default {
     onResize() {
       this.cardHeight = `${window.innerHeight - 64}px`
     },
-    changeFilePath(path) {
-      this.setFilePath(path)
+    changeFilePath(path, event) {
+      if (event.target.getAttribute('class') !== 'btn__content') {
+        this.setFilePath(path)
+      }
     },
     moveToClassification(id) {
       this.moveRepoId = id
@@ -159,6 +166,11 @@ export default {
         }
       }
       this.openMoveClassification = true
+    },
+    removeFromClassification(id) {
+      const t = this.classification.find(e => e.name === this.name)
+      t.repos = t.repos.filter(e => e !== id)
+      this.setClassification(this.classification)
     },
     cancelMoveClassification() {
       this.openMoveClassification = false

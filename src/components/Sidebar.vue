@@ -245,9 +245,11 @@ export default {
         this.addClassification(this.classificationNameInput).then(() => {
           this.setClassificationLoading = false
           this.setClassificationDialog = false
+          this.classificationNameInput = null
         }).catch(err => {
           this.setClassificationLoading = false
           this.setClassificationDialog = false
+          this.classificationNameInput = null
           console.log(err)
         })
       }

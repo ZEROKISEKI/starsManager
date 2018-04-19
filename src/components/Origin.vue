@@ -3,7 +3,7 @@
     <v-layout row>
       <v-flex md4 lg4 xl4 style="flex-basis: auto; -webkit-flex-basis: auto;">
         <v-card id="starred-list-card" style="position: relative; overflow: auto; max-width: 400px;"
-                v-resize="onResize" :height="cardHeight">
+                v-resize="onResize" :height="cardHeight" :key="language">
           <v-toolbar color="indigo" id="starred-list-card-toolbar"
                      dark absolute scroll-off-screen scroll-target="#scrolling-techniques">
             <v-toolbar-title>{{ language }}</v-toolbar-title>
@@ -44,7 +44,7 @@
           </v-toolbar>
           <v-list three-line class="scroll-y" id="scrolling-techniques" style="max-height:100%; padding-top: 64px;">
             <template v-for="(repo, index) in searchStarredRepos">
-              <v-list-tile :key="repo.id" avatar @click="changeFilePath(repo.full_name)">
+              <v-list-tile :key="repo.id" avatar @click="changeFilePath(repo.full_name, $event)">
                 <v-list-tile-content>
                   <v-list-tile-title>{{ repo.full_name }}</v-list-tile-title>
                   <v-list-tile-sub-title class="text--primary">{{ repo.description }}</v-list-tile-sub-title>
@@ -186,8 +186,10 @@ export default {
     onResize() {
       this.cardHeight = `${window.innerHeight - 64}px`
     },
-    changeFilePath(path) {
-      this.setFilePath(path)
+    changeFilePath(path, event) {
+      if (event.target.getAttribute('class') !== 'btn__content') {
+        this.setFilePath(path)
+      }
     },
     moveToClassification(id) {
       this.moveRepoId = id
@@ -228,6 +230,7 @@ export default {
   watch: {
     '$route' (to, from) {
       this.language = to.params.language
+      this.searchKeyWords = ''
     }
   },
   mounted() {
