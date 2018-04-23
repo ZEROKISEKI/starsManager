@@ -69,7 +69,7 @@ UI框架: Vuetify(一款渐进式Material Design框架)
 
 ![customized_classification_2](http://p0w4szagp.bkt.clouddn.com/starsManager/customized_classification_2.gif)
 
-![customized_classification_3]()http://p0w4szagp.bkt.clouddn.com/starsManager/customized_classification_3.gif
+![customized_classification_3](http://p0w4szagp.bkt.clouddn.com/starsManager/customized_classification_3.gif)
 
 ![customized_classification_4](http://p0w4szagp.bkt.clouddn.com/starsManager/customized_classification_4.gif)
 
