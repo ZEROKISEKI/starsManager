@@ -28,12 +28,12 @@
 
 Go和Javascript可以通过sendMessage和OnMessage等接口进行消息的传递, 接下来是前端的选择, 如下所示, 其中parcel, vuetify, pouchdb都是第一次使用:
 
-Vue全家桶系列: Vue2 + Vue-router + Vuex + Vue-i18n
-前端模块打包构建: parcel
-UI框架: Vuetify(一款渐进式Material Design框架)
-前端数据库: Pouchdb
-网络请求: axios
-代码高亮和markdown渲染: github-markdown-css(自己造轮子不如用别人的轮子系列)
+Vue全家桶系列: Vue2 + Vue-router + Vuex + Vue-i18n  
+前端模块打包构建: parcel  
+UI框架: Vuetify(一款渐进式Material Design框架)  
+前端数据库: Pouchdb  
+网络请求: axios  
+代码高亮和markdown渲染: github-markdown-css(自己造轮子不如用别人的轮子系列)  
 
 --- 
 
