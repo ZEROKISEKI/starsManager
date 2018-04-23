@@ -1,63 +1,53 @@
 # starsManager
 
-一款基于vue和go的桌面端管理star项目应用
+A desktop app that help you to manage your github starred repo.
 
-## 前言:
+> [Chinese Introduction](./README_CN.md)
 
-最开始不怎么上github的时候, 自己star的repo很少, 倒也没这个需求, 但是后来github弄得多一些, 自己star的repo也开始多了, 现在大概有一百多个repo, 有些久了都忘了, 不好管理, 受到Quiver和印象笔记这种类型应用的启发, 于是想写个能够方便自己管理star项目的客户端
-
----
-
-## 开发状态:
-
-仍在开发中...  
-
-![windows版本](http://p0w4szagp.bkt.clouddn.com/starsManager/yaoming.jpeg?imageView2/1/w/200/h/200/format/jpg/q/75|imageslim)
-
-- [ ] 检测离线状态   
-- [ ] 样式优化   
-- [ ] 多PC同步   
-- [ ] 修复一些windows下出现的问题  
-- [ ] 待添加  
+## Preface
 
 ---
 
-## 项目技术栈和主要框架:
+## Developing Status
 
-Vue全家桶: vue2 + vuex + vue-router  
-UI框架: vuetify.js(一款渐进式Material Design框架)  
-前端网络请求: axios  
-前端数据库: pouchdb  
-前端构建工具: parcel  
-桌面支持: go-astilectron(thanks to [asticode](https://github.com/asticode)) 
+Still developing..., You can download it from release(find the version fit your system, and unzip it)
 
---- 
+---
 
-## 演示效果(未完):
+## Technology Stack && Main Framework
 
-### 查看star的项目:
+Vue group technology stack: vue2 + vuex + vue-router  
+UI Framework: vuetify.js(a progressive Material Design framework)  
+Network request: axios  
+Front-end Database: pouchdb  
+Module bundler tool: parcel  
+Desktop supported: go-astilectron(thanks to [asticode](https://github.com/asticode))  
+
+## Demo:
+
+### See the repo that you have starred:
 
 ![see_starred_repo.png](./pics/see_starred_repo.png)
 
-### 项目结构树查看:
+### See the starred repo tree:
 
 ![see_tree.png](./pics/see_tree.png)
 
-### 自定义分类:
+### Customize classification:
 
 ![custom_classification.png](./pics/custom_classification.png)
 
-### 利用pouchDB, 离线状态下也可查看:
+### With PouchDB supported, you can see the starred repo contents even in offline state:
 
 ![offline.gif](./pics/offline.gif)
 
 ---
 
-## 安装食用:
+## How to build:
 
-### 前端文件打包:
+### Front-end files bundle:
 
-全局安装parcel:  
+Install parcel global:  
 
 ```
 yarn global add parcel-bundler
@@ -68,7 +58,7 @@ npm install -g parcel-bundler
 
 ```
 
-前端文件打包:  
+Build front-end files: 
 
 ```
 
@@ -78,11 +68,11 @@ $ npm run build
 
 ```
 
-### Golang配置:
+### Config of Golang:
 
-首先你得安装golang的环境, 并且设置好了GOROOT和GOPATH(你可以通过`echo $GOROOT`, `echo $GOPATH`来查看是否已经设置了)  
+Firstly you must have installed Golang environment, and set `GOROOT` and `GOPATH` such on(you can check if you have set them by running `echo $GOROOT`, `echo $GOPATH` in your terminal)
 
-安装go-astilectron和go-astilectron-bundler等依赖:  
+Install go-astilectron and go-astilectron-bundler:  
 
 ```
 $ go get -u github.com/asticode/go-astilectron
@@ -91,7 +81,7 @@ $ go get github.com/ZEROKISEKI/go-astilectron-bootstrap
 
 ```
 
-如果你在上面的get的过程遇到了`unrecognized import path "golang.org/x/ ..."`这样的问题，那么可以利用镜像库解决:  
+If you meet the problem such as `unrecognized import path "golang.org/x/ ..."` in `go get` progress, you can use mirror library to solve it:
 
 ```
 $ mkdir -p $GOPATH/src/golang.org/x
@@ -101,48 +91,38 @@ $ git clone https://github.com/golang/net.git
 $ git clone https://github.com/golang/sys.git
 ```
 
-然后你可以在项目下运行bundler进行生成:  
+After you successfully run `go get`, you can run the following command to build an app:  
 
 ```
 $ astilectron-bundler -v
 ```
 
-在bundler生成的过程中, 会去download electron和astilectron, 如果你遇到了download electron过慢导致failed的问题, 那么可以这样做:  
+Yet it may happen in China: Download electron and astilectron too slow cause failed problem, if happened, you can solve it by the following way:  
 
-在[https://github.com/electron/electron/releases?after=v1.8.2-beta.2](https://github.com/electron/electron/releases?after=v1.8.2-beta.2)选择对应系统下的electron版本  
+Download electron 1.8.1 in [https://github.com/electron/electron/releases?after=v1.8.2-beta.2](https://github.com/electron/electron/releases?after=v1.8.2-beta.2), choose the correct version suit your system  
 
-然后在该项目下新建一个文件夹, 比如叫`cache_astilectron_bundler`, 那么将该electron文件进行更名:
+And then, create a folder in the project, such as `cache_astilectron_bundler`, and rename the electron file you download from release to:
 
 ```
-electron-windows-amd64-1.8.1.zip(windows系统)
-electron-darwin-amd64-1.8.1.zip(OSX系统)
-electron-linux-amd64-1.8.1.zip(linux系统)
+electron-windows-amd64-1.8.1.zip(windows system)
+electron-darwin-amd64-1.8.1.zip(OSX system)
+electron-linux-amd64-1.8.1.zip(linux system)
 ```
 
-再在[https://github.com/asticode/astilectron/releases](https://github.com/asticode/astilectron/releases)下载0.20.0的版本, 放在上面新建的文件夹中:
+And put the electron file in `cache_astilectron_bundler`.
 
-更名为:
+Then download astilectron 0.20.0 in [https://github.com/asticode/astilectron/releases](https://github.com/asticode/astilectron/releases), putting it in `cache_astilectron_bundler` folder:
+
+And rename astilectron.zip to:
 
 ```
 astilectron-0.20.0.zip
 ```
 
-最后在`bundler.json`中增加:
+Lastly add the following code in `bundler.json`:
 
 ```
 "cache_path": "cache_astilectron_bundler"
 ```
 
-这样的话bundler就不用去download了, bundler应该可以了
-
-通过bundler之后, 可以在output文件夹下找到对应的可执行文件(windows的exe, mac的app), 当然也可以通过run go去运行
-
----
-
-## 开发过程(未完):
-
-
-
-
-
-
+After successfully bundler, you can find your app in the output folder and run it, or you can debug it by running `go *.go`
