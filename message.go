@@ -10,8 +10,8 @@ import (
   "strings"
   "encoding/json"
   "os"
-  "os/exec"
   "path"
+  "os/exec"
 )
 
 const (
@@ -178,24 +178,48 @@ func handleMessages(a *astilectron.Astilectron, _ *astilectron.Window, m bootstr
     case "CreateStorageRepo": {
       var repoName string
       json.Unmarshal(m.Payload, &repoName)
-      if _, err := os.Stat(repoName); os.IsNotExist(err) {
-        _ = os.Mkdir(repoName, 0755)
-        classificationsFile, err := os.Create(path.Join(repoName, "classifications.json"))
-        if err != nil {
-          return err.Error(), nil
+      if s != "windows" {
+        if _, err := os.Stat(repoName); os.IsNotExist(err) {
+          err = os.Mkdir(repoName, os.ModePerm)
+          if err != nil {
+            return err.Error(), nil
+          }
+          classificationsFile, err := os.Create(path.Join(repoName, "classifications.json"))
+          if err != nil {
+            return err.Error(), nil
+          }
+          classificationsFile.Close()
+          _ = os.Chdir(repoName)
+          cmd := exec.Command("git", "init")
+          err = cmd.Run()
+          if err != nil {
+            return err.Error(), nil
+          }
+          _ = os.Chdir(dir)
+          return "success", nil
+        } else {
+          return "not empty", nil
         }
-        classificationsFile.Close()
-        wd, _ := os.Getwd()
-        _ = os.Chdir(repoName)
-        cmd := exec.Command("git", "init")
-        err = cmd.Run()
-        if err != nil {
-          return err.Error(), nil
-        }
-        _ = os.Chdir(wd)
-        return "success", nil
       } else {
-        return "not empty", nil
+        if _, err := os.Stat(repoName); os.IsNotExist(err) {
+          wd, _ := os.Getwd()
+          _ = os.Mkdir(repoName, os.ModePerm)
+          classificationsFile, err := os.Create(path.Join(repoName, "classifications.json"))
+          if err != nil {
+            return err.Error(), nil
+          }
+          classificationsFile.Close()
+          _ = os.Chdir(repoName)
+          cmd := exec.Command("git", "init")
+          err = cmd.Run()
+          if err != nil {
+            return err.Error(), nil
+          }
+          _ = os.Chdir(wd)
+          return "success", nil
+        } else {
+          return "not empty", nil
+        }
       }
       break
     }

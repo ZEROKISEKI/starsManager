@@ -9,6 +9,8 @@ import (
   "os"
   "path/filepath"
   "log"
+  "runtime"
+  "path"
 )
 
 var (
@@ -16,6 +18,8 @@ var (
   BuiltAt string
   debug   = flag.Bool("d", true, "enables the debug mode")
   w       *astilectron.Window
+  s       = runtime.GOOS
+  dir     string
 )
 
 func main() {
@@ -29,6 +33,12 @@ func main() {
   } else {
     p = filepath.Dir(p)
     log.Print(p)
+  }
+
+  if s != "windows" {
+    dir, _ = filepath.Abs(filepath.Dir(os.Args[0]))
+    dir = path.Join(dir, "../../..")
+    _ = os.Chdir(dir)
   }
 
   astilog.Debugf("Running app built at %s", BuiltAt)
