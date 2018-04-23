@@ -2,7 +2,7 @@
 
 A desktop app that help you to manage your github starred repo.
 
-> [Chinese Introduction](./README_CN.md)
+> [中文简介](./README_CN.md)
 
 ## Preface
 
